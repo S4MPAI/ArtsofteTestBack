@@ -35,7 +35,18 @@ namespace Api.Controllers
                 Password = registerRequest.Password, 
                 Phone = registerRequest.Phone 
             };
-            userManager.Create(userCreateDto);
+
+            var result = userManager.Create(userCreateDto);
+
+            if (!result.IsSuccess)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Message);
+                }
+
+                return View();
+            }
 
             return RedirectToAction(nameof(Login));
         }

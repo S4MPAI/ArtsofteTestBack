@@ -1,4 +1,4 @@
-﻿@model Api.RequestModels.RegisterRequest
+﻿@model RegisterRequest
 @{
     ViewData["Title"] = "Register";
 }
@@ -7,20 +7,19 @@
 
 <form asp-antiforgery="true">
     <div>
-        <div class="validation" asp-validation-summary="ModelOnly"></div>
         <div>
             <label asp-for="FIO"></label><br />
-            <input type="text" asp-for="FIO" />
+            <input type="text" asp-for="FIO" /><br />
             <span asp-validation-for="FIO"></span>
         </div>
         <div>
             <label asp-for="Phone"></label><br />
-            <input asp-for="Phone" />
+            <input asp-for="Phone" /><br />
             <span asp-validation-for="Phone"></span>
         </div>
         <div>
             <label asp-for="Email"></label><br />
-            <input asp-for="Email" />
+            <input type="text" asp-for="Email" />
             <span asp-validation-for="Email"></span>
         </div>
         <div>
@@ -34,7 +33,8 @@
             <span asp-validation-for="PasswordConfirm"></span>
         </div>
         <div>
-            <input type="submit" value="Save" />
+            <input type="submit" value="Создать" />
         </div>
+        <div class="validation" asp-validation-summary="ModelOnly"></div>
     </div>
 </form>

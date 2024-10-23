@@ -1,5 +1,7 @@
 ﻿using DAL.Entities;
+using DAL.Exceptions;
 using DAL.Interfaces;
+using Logic.Base;
 using Logic.Dto;
 using Logic.Interfaces;
 
@@ -14,7 +16,7 @@ public class UserManager : IUserManager
         this.userRepository = userRepository;
     }
 
-    public int Create(UserCreateDto userCreateDto)
+    public Result<int> Create(UserCreateDto userCreateDto)
     {
         var userEntity = new User() 
         { 
@@ -24,8 +26,15 @@ public class UserManager : IUserManager
             Password = userCreateDto.Password 
         };
 
-        userEntity = userRepository.Add(userEntity);
+        try
+        {
+            userEntity = userRepository.Add(userEntity);
+        }
+        catch(NotUniqueValueInPropertyException ex)
+        {
+            return new Result<int>(new List<Error> { new Error("NotUniqueValue", ex.Message) });
+        }
 
-        return userEntity.Id;
+        return new Result<int>(userEntity.Id);
     }
 }

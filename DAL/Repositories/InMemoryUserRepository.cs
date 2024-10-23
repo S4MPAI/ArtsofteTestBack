@@ -31,11 +31,11 @@ public class InMemoryUserRepository : IUserRepository
         {
             if (entity.Phone == newUser.Phone)
             {
-                throw new NotUniqueValueInProperyException(typeof(User), nameof(User.Phone), entity.Phone);
+                throw new NotUniqueValueInPropertyException(typeof(User), nameof(User.Phone), entity.Phone);
             }
             if (entity.Email == newUser.Email)
             {
-                throw new NotUniqueValueInProperyException(typeof(User), nameof(User.Email), entity.Email);
+                throw new NotUniqueValueInPropertyException(typeof(User), nameof(User.Email), entity.Email);
             }
         }
     }
