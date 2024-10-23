@@ -6,11 +6,11 @@ using DAL.Interfaces;
 
 namespace DAL.Repositories;
 
-public class UserInMemoryRepository : IUserRepository
+public class InMemoryUserRepository : IUserRepository
 {
     private InMemorySet<User> users;
 
-    public UserInMemoryRepository(InApplicationMemoryContext context)
+    public InMemoryUserRepository(InApplicationMemoryContext context)
     {
         users = context.Users;
     }

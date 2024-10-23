@@ -10,4 +10,8 @@
     <Folder Include="Controllers\api\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Logic\Logic.csproj" />
+  </ItemGroup>
+
 </Project>
