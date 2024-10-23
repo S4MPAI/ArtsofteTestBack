@@ -28,7 +28,7 @@ namespace Api.Controllers
                 return View();
             }
 
-            var userCreateDto = new UserCreateDto() 
+            var userCreateDto = new UserDto() 
             { 
                 FIO = registerRequest.FIO, 
                 Email = registerRequest.Email, 

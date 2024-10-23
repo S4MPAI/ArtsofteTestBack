@@ -16,7 +16,7 @@ public class UserManager : IUserManager
         this.userRepository = userRepository;
     }
 
-    public Result<int> Create(UserCreateDto userCreateDto)
+    public Result<int> Create(UserDto userCreateDto)
     {
         var userEntity = new User() 
         { 

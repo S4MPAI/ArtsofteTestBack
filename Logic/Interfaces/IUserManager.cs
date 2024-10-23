@@ -5,5 +5,5 @@ namespace Logic.Interfaces;
 
 public interface IUserManager
 {
-    public Result<int> Create(UserCreateDto userCreateDto);
+    public Result<int> Create(UserDto userCreateDto);
 }
