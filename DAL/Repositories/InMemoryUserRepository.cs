@@ -46,14 +46,19 @@ public class InMemoryUserRepository : IUserRepository
         users.Delete(newDeleteUser);
     }
 
-    public User? GetById(int id)
+    public User? GetByEmail(string email)
     {
-        return users.FirstOrDefault(x => x.Id == id);
+        return users.FirstOrDefault(x => x.Email == email);
     }
 
     public void Update(User user)
     {
         var newUpdateUser = new User(user);
         users.Update(newUpdateUser);
+    }
+
+    public User? GetByPhone(string phone)
+    {
+        return users.FirstOrDefault(x => x.Phone == phone);
     }
 }

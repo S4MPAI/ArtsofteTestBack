@@ -8,5 +8,6 @@ public interface IUserRepository
     public User Add(User user);
     public void Update(User user);
     public void Delete(User user);
-    public User GetById(int id);
+    public User? GetByEmail(string email);
+    public User? GetByPhone(string phone);
 }

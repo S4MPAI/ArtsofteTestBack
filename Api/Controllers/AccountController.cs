@@ -1,6 +1,7 @@
 ﻿using Api.RequestModels;
 using Logic.Dto;
 using Logic.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -55,6 +56,37 @@ namespace Api.Controllers
         public IActionResult Login()
         {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult Login(LoginRequest loginRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            var user = userManager.GetByPhone(loginRequest.Phone);
+
+            if (IsNotCorrectLoginRequest(loginRequest, user))
+            {
+                ModelState.AddModelError(nameof(loginRequest.Phone), "Ошибка авторизации");
+                return View();
+            }
+            
+            return RedirectToAction(nameof(Cabinet));
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult Cabinet()
+        {
+            return View();
+        }
+
+        private bool IsNotCorrectLoginRequest(LoginRequest loginRequest, UserDto? user)
+        {
+            return user == null || !userManager.CheckPassword(user, loginRequest.Password);
         }
     }
 }

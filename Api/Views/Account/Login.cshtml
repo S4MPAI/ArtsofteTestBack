@@ -1,0 +1,25 @@
+﻿@model LoginRequest
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Register</h1>
+
+<form asp-antiforgery="true">
+    <div>
+        <div>
+            <label asp-for="Phone"></label><br />
+            <input asp-for="Phone" /><br />
+            <span asp-validation-for="Phone"></span>
+        </div>
+        <div>
+            <label asp-for="Password"></label><br />
+            <input asp-for="Password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <div>
+            <input type="submit" value="Создать" />
+        </div>
+        <div class="validation" asp-validation-summary="ModelOnly"></div>
+    </div>
+</form>
