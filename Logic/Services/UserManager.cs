@@ -32,7 +32,7 @@ public class UserManager : IUserManager
             FIO = userCreateDto.FIO, 
             Email = userCreateDto.Email, 
             Phone = userCreateDto.Phone, 
-            Password = userCreateDto.Password 
+            Password = hasher.Create(userCreateDto.Password) 
         };
 
         try

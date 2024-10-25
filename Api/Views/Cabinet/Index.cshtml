@@ -1,0 +1,30 @@
+﻿@model UserInfoResponse
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>Login</h1>
+
+<form asp-antiforgery="true">
+    <div>
+        <div>
+            <label asp-for="FIO"></label><br />
+            <p>@Model.FIO</p>
+        </div>
+        <div>
+            <label asp-for="Phone"></label><br />
+            <p>@Model.Phone</p>
+        </div>
+        <div>
+            <label asp-for="Email"></label><br />
+            <p>@Model.Email</p>
+        </div>
+        <div>
+            <label asp-for="LastLogin"></label><br />
+            <p>@Model.LastLogin</p>
+        </div>
+        <div>
+            <input type="submit" value="Выход" />
+        </div>
+    </div>
+</form>

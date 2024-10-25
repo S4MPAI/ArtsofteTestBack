@@ -16,7 +16,6 @@ public class RegisterRequest
     [RussianPhone(ErrorMessage = "Некорректный номер телефона")]
     public string Phone { get; set; }
 
-    [DisplayName("Почта")]
     [Required(ErrorMessage = "Не указана почта")]
     [EmailAddress(ErrorMessage = "Некорректная почта")]
     [MaxLength(150, ErrorMessage = "Максимальное количество символов 150")]

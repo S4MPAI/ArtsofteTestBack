@@ -1,8 +1,11 @@
 ﻿using Api.RequestModels;
 using Logic.Dto;
 using Logic.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Api.Controllers
 {
@@ -73,15 +76,16 @@ namespace Api.Controllers
                 ModelState.AddModelError(nameof(loginRequest.Phone), "Ошибка авторизации");
                 return View();
             }
-            
-            return RedirectToAction(nameof(Cabinet));
-        }
 
-        [Authorize]
-        [HttpGet]
-        public IActionResult Cabinet()
-        {
-            return View();
+            var claims = new List<Claim>() 
+            { 
+                new Claim(ClaimTypes.Email, user.Email), 
+                new Claim(ClaimTypes.Name, user.FIO)
+            };
+            var claimsIdentity = new ClaimsIdentity(claims);
+            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+            return RedirectToAction("Index", "Cabinet");
         }
 
         private bool IsNotCorrectLoginRequest(LoginRequest loginRequest, UserDto? user)
