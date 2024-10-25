@@ -17,6 +17,7 @@ public class User : BaseEntity
         Phone = user.Phone;
         Email = user.Email;
         Password = user.Password;
+        LastLogin = user.LastLogin;
     }
 
     public User()

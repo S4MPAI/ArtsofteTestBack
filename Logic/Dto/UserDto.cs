@@ -7,5 +7,5 @@ public class UserDto
     public string Phone { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
-    public DateTime LastLogin { get; set; }
+    public DateTime? LastLogin { get; set; }
 }

@@ -4,6 +4,7 @@ using DAL.Interfaces;
 using Logic.Base;
 using Logic.Dto;
 using Logic.Interfaces;
+using System.Security.Claims;
 
 namespace Logic.Services;
 
@@ -16,13 +17,6 @@ public class UserManager : IUserManager
     {
         this.userRepository = userRepository;
         this.hasher = hasher;
-    }
-
-    public bool CheckPassword(UserDto userDto, string password)
-    {
-        var hashedPassword = hasher.Create(password);
-
-        return hashedPassword == userDto.Password;
     }
 
     public Result<int> Create(UserDto userCreateDto)
@@ -79,7 +73,36 @@ public class UserManager : IUserManager
             Email = user.Email,
             FIO = user.FIO,
             Phone = user.Phone,
-            Password = user.Password
+            Password = user.Password,
+            LastLogin = user.LastLogin
         };
+    }
+
+    public Result<List<Claim>> ApplySignInClaims(UserDto userDto)
+    {
+        var userEntity = userRepository.GetByPhone(userDto.Phone);
+
+        if (userEntity == null)
+        {
+            return new Result<List<Claim>>(new[] { new Error("IncorrectPhone", "Пользователя с таким номером телефона не существует") });
+        }
+
+        var dtoHashedPassword = hasher.Create(userDto.Password);
+        if (dtoHashedPassword != userEntity.Password) 
+        {
+            return new Result<List<Claim>>(new[] { new Error("IncorrectPassword", "Неверный пароль") });
+        }
+
+        userEntity.LastLogin = DateTime.Now;
+        userRepository.Update(userEntity);
+
+        var claims = new List<Claim>()
+        {
+            new Claim(ClaimTypes.MobilePhone, userDto.Phone),
+            new Claim(ClaimTypes.Email, userEntity.Email),
+            new Claim(ClaimTypes.Name, userEntity.FIO)
+        };
+
+        return new Result<List<Claim>>(claims);
     }
 }

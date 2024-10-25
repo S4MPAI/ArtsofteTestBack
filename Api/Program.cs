@@ -9,7 +9,11 @@ builder.Services.AddInMemoryContext();
 builder.Services.AddLogicServices();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => options.LoginPath = new PathString("/Account/Login"));
+    .AddCookie(options => options.LoginPath = new PathString("/Account/Login"))
+    .AddJwtBearer(options =>
+    {
+
+    });
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -32,6 +36,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Register}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();

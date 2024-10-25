@@ -6,7 +6,7 @@ namespace DAL.Interfaces;
 public interface IUserRepository
 {
     public User Add(User user);
-    public void Update(User user);
+    public User Update(User user);
     public void Delete(User user);
     public User? GetByEmail(string email);
     public User? GetByPhone(string phone);

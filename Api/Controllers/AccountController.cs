@@ -7,90 +7,95 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace Api.Controllers
+namespace Api.Controllers;
+
+public class AccountController : Controller
 {
-    public class AccountController : Controller
+    private IUserManager userManager;
+
+    public AccountController(IUserManager userManager)
     {
-        private IUserManager userManager;
+        this.userManager = userManager;
+    }
 
-        public AccountController(IUserManager userManager)
-        {
-            this.userManager = userManager;
-        }
+    [HttpGet]
+    public IActionResult Register()
+    {
+        return View();
+    }
 
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Register(RegisterRequest registerRequest)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
-
-            var userCreateDto = new UserDto() 
-            { 
-                FIO = registerRequest.FIO, 
-                Email = registerRequest.Email, 
-                Password = registerRequest.Password, 
-                Phone = registerRequest.Phone 
-            };
-
-            var result = userManager.Create(userCreateDto);
-
-            if (!result.IsSuccess)
-            {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Message);
-                }
-
-                return View();
-            }
-
-            return RedirectToAction(nameof(Login));
-        }
-
-        [HttpGet]
-        public IActionResult Login()
+    [HttpPost]
+    public IActionResult Register(RegisterRequest request)
+    {
+        if (!ModelState.IsValid)
         {
             return View();
         }
 
-        [HttpPost]
-        public IActionResult Login(LoginRequest loginRequest)
+        var userCreateDto = new UserDto() 
+        { 
+            FIO = request.FIO, 
+            Email = request.Email, 
+            Password = request.Password, 
+            Phone = request.Phone 
+        };
+
+        var result = userManager.Create(userCreateDto);
+
+        if (!result.IsSuccess)
         {
-            if (!ModelState.IsValid)
+            foreach (var error in result.Errors)
             {
-                return View();
+                ModelState.AddModelError("", error.Message);
             }
 
-            var user = userManager.GetByPhone(loginRequest.Phone);
-
-            if (IsNotCorrectLoginRequest(loginRequest, user))
-            {
-                ModelState.AddModelError(nameof(loginRequest.Phone), "Ошибка авторизации");
-                return View();
-            }
-
-            var claims = new List<Claim>() 
-            { 
-                new Claim(ClaimTypes.Email, user.Email), 
-                new Claim(ClaimTypes.Name, user.FIO)
-            };
-            var claimsIdentity = new ClaimsIdentity(claims);
-            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-
-            return RedirectToAction("Index", "Cabinet");
+            return View();
         }
 
-        private bool IsNotCorrectLoginRequest(LoginRequest loginRequest, UserDto? user)
+        return RedirectToAction(nameof(Welcome), new { userCreateDto.FIO });
+    }
+
+    [HttpGet]
+    public IActionResult Welcome([FromQuery]string FIO)
+    {
+        return View(model: FIO);
+    }
+
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginRequest request)
+    {
+        if (!ModelState.IsValid)
         {
-            return user == null || !userManager.CheckPassword(user, loginRequest.Password);
+            return View();
         }
+
+        var user = new UserDto() { Phone = request.Phone, Password = request.Password };
+
+        var result = userManager.ApplySignInClaims(user);
+        if (!result.IsSuccess)
+        {
+            ModelState.AddModelError(nameof(request.Phone), "Ошибка авторизации");
+            return View();
+        }
+
+        var claimsIdentity = new ClaimsIdentity(result.Value, CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignInAsync(new ClaimsPrincipal(claimsIdentity));
+
+        return RedirectToAction("Index", "Cabinet");
+    }
+
+    [Authorize]
+    [HttpPost]
+    public IActionResult Logout()
+    {
+        HttpContext.SignOutAsync();
+
+        return RedirectToAction(nameof(Login));
     }
 }

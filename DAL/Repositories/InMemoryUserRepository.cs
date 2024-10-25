@@ -51,10 +51,12 @@ public class InMemoryUserRepository : IUserRepository
         return users.FirstOrDefault(x => x.Email == email);
     }
 
-    public void Update(User user)
+    public User Update(User user)
     {
         var newUpdateUser = new User(user);
         users.Update(newUpdateUser);
+
+        return newUpdateUser;
     }
 
     public User? GetByPhone(string phone)

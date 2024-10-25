@@ -20,3 +20,21 @@ public class Result<TValue>
         Value = default;
     }
 }
+
+public class Result
+{
+    public readonly IEnumerable<Error> Errors;
+    public readonly bool IsSuccess;
+
+    public Result()
+    {
+        IsSuccess = true;
+        Errors = new List<Error>();
+    }
+
+    public Result(IEnumerable<Error> errors)
+    {
+        IsSuccess = false;
+        Errors = errors;
+    }
+}

@@ -1,9 +1,9 @@
 ﻿@model UserInfoResponse
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Index";
 }
 
-<h1>Login</h1>
+<h1>Личный кабинет</h1>
 
 <form asp-antiforgery="true">
     <div>
@@ -23,8 +23,9 @@
             <label asp-for="LastLogin"></label><br />
             <p>@Model.LastLogin</p>
         </div>
+        <br />
         <div>
-            <input type="submit" value="Выход" />
+            <button asp-controller="Account" asp-action="Logout">Выход</button>
         </div>
     </div>
 </form>
