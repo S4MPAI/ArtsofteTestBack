@@ -1,10 +1,14 @@
-﻿using Api.RequestModels;
+﻿using Api.Authentication;
+using Api.RequestModels;
 using Api.ResponseModels;
 using Logic.Dto;
 using Logic.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Areas.api.Controllers;
 
@@ -14,9 +18,11 @@ namespace Api.Areas.api.Controllers;
 public class AccountApiController : ControllerBase
 {
     private readonly IUserManager userManager;
-    public AccountApiController(IUserManager userManager) 
+    private readonly AuthOptions authOptions;
+    public AccountApiController(IUserManager userManager, AuthOptions authOptions) 
     { 
         this.userManager = userManager;
+        this.authOptions = authOptions;
     }
 
     [Route("[action]")]
@@ -56,29 +62,45 @@ public class AccountApiController : ControllerBase
             return BadRequest(errorResponse);
         }
 
-        var claimsIdentity = new ClaimsIdentity(result.Value);
+        var claimsIdentity = new ClaimsIdentity(result.Value, JwtBearerDefaults.AuthenticationScheme);
+        var jwt = new JwtSecurityToken(
+            issuer: authOptions.ISSUER, 
+            audience: authOptions.AUDIENCE, 
+            claims: result.Value, 
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(5)),
+            signingCredentials: new SigningCredentials(authOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+
+        var token = new JwtSecurityTokenHandler().WriteToken(jwt);
+        HttpContext.Session.SetString("JWToken", token);
 
         return Ok();
     }
 
     [Route("get-my-info")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet]
     public IActionResult GetMyInfo()
     {
-        var userEmail = User.FindFirst(ClaimTypes.MobilePhone);
-        var userInfo = userManager.GetByEmail(userEmail.Value);
+        var userEmail = User.FindFirst(ClaimTypes.Email);
+        var userDto = userManager.GetByEmail(userEmail.Value);
 
-        return Ok();
+        var userInfoResponse = new UserInfoResponse()
+        {
+            FIO = userDto.FIO,
+            Email = userDto.Email,
+            Phone = userDto.Phone,
+            LastLogin = userDto.LastLogin.Value
+        };
+
+        return Ok(userInfoResponse);
     }
 
-    [Route("get-my-info")]
-    [Authorize]
+    [Route("[action]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet]
     public IActionResult Logout()
     {
-        var userEmail = User.FindFirst(ClaimTypes.MobilePhone);
-        HttpContext.Response.Cookies.Delete("token");
+        HttpContext.Session.Clear();
 
         return Ok();
     }

@@ -14,4 +14,10 @@ public static class AddDataContextExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddDatabaseContext(this IServiceCollection services, ConfigurationManager configurationManager)
+    {
+        //здесь добавляются DbContexts и классы репозиториев
+        return services;
+    }
 }
